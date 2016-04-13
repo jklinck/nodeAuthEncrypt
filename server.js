@@ -9,7 +9,7 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 var flash = require('connect-flash');
 var app = express();
 
