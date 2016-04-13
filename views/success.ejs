@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Logged in</title>
+</head>
+<body>
+	<h1>Welcome <%= user.username %></h1>
+	<!-- use 'user.local.username' above -->
+	
+	<form action='/logout' method='post'>
+		<input type='submit' value='Log out'>
+	</form>
+</body>
+</html>
