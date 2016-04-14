@@ -61,7 +61,7 @@ function(req, username, password, done){
 			if(err)
 				return done(err);
 			if(user){
-				return done(null, false, req.flash('signupMessage', 'That email already taken'));
+				return done(null, false, req.flash('signupMessage', 'That name is already taken'));
 			} else {
 				var newUser = new User();
 				newUser.username = username;
@@ -91,9 +91,9 @@ passport.use('local-login', new LocalStrategy({
 				if(err)
 					return done(err);
 				if(!user)
-					return done(null, false, req.flash('loginMessage', 'No User found'));
+					return done(null, false, req.flash('loginMessage', 'User not found'));
 				if(!user.validPassword(password)){
-					return done(null, false, req.flash('loginMessage', 'invalid password'));
+					return done(null, false, req.flash('loginMessage', 'Invalid username or password'));
 				}
 				return done(null, user);
 
@@ -128,10 +128,10 @@ app.post('/register',passport.authenticate('local-signup',{
 }));
 
 app.get('/login',function(req,res){
-	res.render('login');
+	res.render('login',{message:req.flash('loginMessage')});
 });
 
-app.get('/success',function(req,res){
+app.get('/success',isLoggedIn,function(req,res){
 	res.render('success',{
 		user:req.user
 	});
@@ -140,7 +140,7 @@ app.get('/success',function(req,res){
 app.post('/login',passport.authenticate('local-login',{
 	successRedirect: '/success',
     failureRedirect: '/login',
-    failureFlash:'Invalid username or password'
+    failureFlash: true
 }));
 
 
@@ -149,9 +149,20 @@ app.post('/logout',function(req,res){
 		res.redirect('login');
 });
 
+function isLoggedIn(req,res,next){
+	if(req.isAuthenticated()){
+		return next();
+	}
+	res.render('login');
+}
+
 // ---------------------------------------------------------------------------
 
 var port = process.env.PORT || 3000;
 app.listen(port,function(){
 	console.log("listening on port: "+port)
 })
+
+// ------------ Flash message information -------------------
+// lines 64, 94, 96 in passport.use()
+// lines 127, 143 in routes for 'post to regsiter' and post to login
