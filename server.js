@@ -11,6 +11,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt-nodejs');
 var flash = require('connect-flash');
+var expressValidator = require('express-validator');
 var app = express();
 
 // -------- set view engine to ejs
@@ -23,8 +24,8 @@ mongoose.connect('mongodb://localhost/nodeAuthEncrypt');
 var Schema = mongoose.Schema;
 var UserSchema = new Schema({
 	// local:{
-		username:{type:String, required:true},
-		password:{type:String, required:true},
+		username:{type:String},
+		password:{type:String},
 		created_at:{type: Date, default: Date.now}
 	// }
 });
@@ -104,6 +105,7 @@ passport.use('local-login', new LocalStrategy({
 
 // Node modules configuration
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(expressValidator()); // this MUST come after the bodyParser above
 app.use(cookieParser());
 app.use(expressSession({
 	secret: process.env.SESSION_SECRET || 'secret',
@@ -118,12 +120,12 @@ app.use(flash());
 
 // ------------ ROUTES -----------------------------------------------------
 app.get('/',function(req,res){
-	res.render('index');
+	res.render('index',{message:req.flash('signupMessage')});
 });
 
 app.post('/register',passport.authenticate('local-signup',{
 	successRedirect: '/login',
-	failureRedirect: '/index',
+	failureRedirect: '/',
 	failureFlash: true
 }));
 

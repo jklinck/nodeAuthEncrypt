@@ -4,10 +4,19 @@
 	<title>Registration</title>
 </head>
 <body>
+	<% if(message.length>0){ %>
+		<div style='color:red'><%= message %></div>
+	<% } %>
 	<h1>Register here</h1>
 	<form action='/register' method='post'>
-		<input type='text' name='username' placeholder='username'>
-		<input type='password' name='password' placeholder='password'>
+		<div>
+			<label>Username: </label>
+			<input type='text' name='username' placeholder='username'>
+		</div>
+		<div>
+			<label>Password: </label>
+			<input type='password' name='password' placeholder='password'>
+		</div>
 		<input type='submit' value='Register'>
 	</form>
 	<h2><a href='/login'>Click here to log in if you have already registerd</a></h2>
