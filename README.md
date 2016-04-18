@@ -1,1 +1,1 @@
-Basic node application with express, authorization and encryption. 
+Basic node application with express, authorization, validation and encryption. 
