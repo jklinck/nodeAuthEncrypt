@@ -1,7 +1,7 @@
 var passport = require('passport');
 
 module.exports = function(app){
-	var errors;
+	var errors; //if you don't declare errors here you will have issues with app.get('/')
 	app.get('/',function(req,res){
 		res.render('index',{errors:errors,message:req.flash('signupMessage')});
 	});
@@ -12,7 +12,7 @@ module.exports = function(app){
 		errors = req.validationErrors();
 		if(errors){
 			res.render('index',{errors:errors,message:req.flash('signupMessage')});
-			errors = [];
+			errors = []; // to clear the errors array
 		}
 		else{
 			passport.authenticate('local-signup',{
@@ -39,7 +39,7 @@ module.exports = function(app){
 		errors = req.validationErrors();
 		if(errors){
 			res.render('login',{errors:errors,message:req.flash('loginMessage')});
-			errors = [];
+			errors = []; // to clear the errors array
 		}
 		else{
 			passport.authenticate('local-login',{
@@ -50,9 +50,8 @@ module.exports = function(app){
 		}
 	});
 
-
 	app.post('/logout',function(req,res){
-			req.logout();
+			req.logout(); // this a built in function from passport.js
 			res.redirect('login');
 	});
 
@@ -61,5 +60,6 @@ module.exports = function(app){
 			return next();
 		}
 		res.render('login');
-	}
+	} // this function keeps anyone from accessing the '/success' page unless they are 
+	// logged in
 }

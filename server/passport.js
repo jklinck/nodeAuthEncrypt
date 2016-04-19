@@ -48,7 +48,6 @@ module.exports = function(passport){
 		function(req, username, password, done){
 			process.nextTick(function(){
 				User.findOne({ 'username': username}, function(err, user){
-				// User.findOne({ 'local.username': username}, function(err, user){
 					if(err)
 						return done(err);
 					if(!user)
