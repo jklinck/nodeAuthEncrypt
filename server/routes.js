@@ -1,34 +1,26 @@
 var passport = require('passport');
 
 module.exports = function(app){
-
+	var errors;
 	app.get('/',function(req,res){
-		res.render('index',{message:req.flash('signupMessage')});
+		res.render('index',{errors:errors,message:req.flash('signupMessage')});
 	});
 
-	app.post('/register',passport.authenticate('local-signup',{
+	app.post('/register',function(req,res){
+		req.check('username','A username is required').notEmpty();
+		req.check('password','A password is required').notEmpty();
+		errors = req.validationErrors();
+		if(errors){
+			res.render('index',{errors:errors,message:req.flash('signupMessage')});
+		}
+		else{
+			passport.authenticate('local-signup',{
 			successRedirect: '/login',
 			failureRedirect: '/',
 			failureFlash: true
-			})
-	);
-
-	// app.post('/register',function(req,res){
-	// 	req.check('username','A username is required').notEmpty();
-	// 	req.check('password','A password is required').notEmpty();
-	// 	var errors = req.validationErrors();
-	// 	console.log('errors check: ', errors);
-	// 	if(errors){
-	// 		res.render('index',{errors:req.flash(errors)});
-	// 	}
-	// 	else{
-	// 		passport.authenticate('local-signup',{
-	// 		successRedirect: '/login',
-	// 		failureRedirect: '/',
-	// 		failureFlash: true
-	// 		});
-	// 	}
-	// });
+			})(req,res);
+		}
+	});
 
 	app.get('/login',function(req,res){
 		res.render('login',{message:req.flash('loginMessage')});
