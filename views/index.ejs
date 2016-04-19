@@ -10,7 +10,7 @@
 	<% if(errors){ %>
 		<ul>
 			<% for(error in errors){ %>
-			<li><%= errors[error].msg %></li>
+			<li style='color:red'><%= errors[error].msg %></li>
 			<% } %>
 		</ul>
 	<% }%>

@@ -7,6 +7,13 @@
 	<% if(message.length>0){ %>
 		<div style='color:red'><%= message %></div>
 	<% } %>
+	<% if(errors){ %>
+		<ul>
+			<% for(error in errors){ %>
+			<li style='color:red'><%= errors[error].msg %></li>
+			<% } %>
+		</ul>
+	<% }%>
 	<h1>Log in here</h1>
 	<form action='/login' method='post'>
 		<div>

@@ -12,6 +12,7 @@ module.exports = function(app){
 		errors = req.validationErrors();
 		if(errors){
 			res.render('index',{errors:errors,message:req.flash('signupMessage')});
+			errors = [];
 		}
 		else{
 			passport.authenticate('local-signup',{
@@ -23,7 +24,7 @@ module.exports = function(app){
 	});
 
 	app.get('/login',function(req,res){
-		res.render('login',{message:req.flash('loginMessage')});
+		res.render('login',{errors:errors,message:req.flash('loginMessage')});
 	});
 
 	app.get('/success',isLoggedIn,function(req,res){
@@ -32,11 +33,22 @@ module.exports = function(app){
 		});
 	});
 
-	app.post('/login',passport.authenticate('local-login',{
-		successRedirect: '/success',
-	    failureRedirect: '/login',
-	    failureFlash: true
-	}));
+	app.post('/login', function(req,res){
+		req.check('username','Please enter a username').notEmpty();
+		req.check('password','Please enter your password').notEmpty();
+		errors = req.validationErrors();
+		if(errors){
+			res.render('login',{errors:errors,message:req.flash('loginMessage')});
+			errors = [];
+		}
+		else{
+			passport.authenticate('local-login',{
+			successRedirect: '/success',
+		    failureRedirect: '/login',
+		    failureFlash: true
+			})(req,res);
+		}
+	});
 
 
 	app.post('/logout',function(req,res){
