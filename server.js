@@ -25,7 +25,7 @@ var Schema = mongoose.Schema;
 var UserSchema = new Schema({
 		username:{type:String},
 		password:{type:String},
-		created_at:{type: Date, default: Date.now};
+		created_at:{type: Date, default: Date.now}
 });
 // generating a hash
 UserSchema.methods.generateHash = function(password) {
