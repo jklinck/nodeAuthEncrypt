@@ -23,11 +23,9 @@ mongoose.connect('mongodb://localhost/nodeAuthEncrypt');
 // create user model
 var Schema = mongoose.Schema;
 var UserSchema = new Schema({
-	// local:{
 		username:{type:String},
 		password:{type:String},
-		created_at:{type: Date, default: Date.now}
-	// }
+		created_at:{type: Date, default: Date.now};
 });
 // generating a hash
 UserSchema.methods.generateHash = function(password) {
@@ -37,7 +35,6 @@ UserSchema.methods.generateHash = function(password) {
 // checking if password is valid
 UserSchema.methods.validPassword = function(password) {
     return bcrypt.compareSync(password, this.password);
-    // return bcrypt.compareSync(password, this.local.password); 
 };
 var User = mongoose.model('User', UserSchema);
 
@@ -66,9 +63,7 @@ function(req, username, password, done){
 			} else {
 				var newUser = new User();
 				newUser.username = username;
-				// newUser.local.username = username;
 				newUser.password = newUser.generateHash(password);
-				// newUser.local.password = newUser.generateHash(password);
 				newUser.save(function(err){
 					if(err)
 						throw err;
@@ -88,7 +83,6 @@ passport.use('local-login', new LocalStrategy({
 	function(req, username, password, done){
 		process.nextTick(function(){
 			User.findOne({ 'username': username}, function(err, user){
-			// User.findOne({ 'local.username': username}, function(err, user){
 				if(err)
 					return done(err);
 				if(!user)
@@ -119,45 +113,67 @@ app.use(flash());
 
 
 // ------------ ROUTES -----------------------------------------------------
-app.get('/',function(req,res){
-	res.render('index',{message:req.flash('signupMessage')});
-});
-
-app.post('/register',passport.authenticate('local-signup',{
-	successRedirect: '/login',
-	failureRedirect: '/',
-	failureFlash: true
-}));
-
-app.get('/login',function(req,res){
-	res.render('login',{message:req.flash('loginMessage')});
-});
-
-app.get('/success',isLoggedIn,function(req,res){
-	res.render('success',{
-		user:req.user
+var errors; //if you don't declare errors here you will have issues with app.get('/')
+	app.get('/',function(req,res){
+		res.render('index',{errors:errors,message:req.flash('signupMessage')});
 	});
-});
 
-app.post('/login',passport.authenticate('local-login',{
-	successRedirect: '/success',
-    failureRedirect: '/login',
-    failureFlash: true
-}));
+	app.post('/register',function(req,res){
+		req.check('username','A username is required').notEmpty();
+		req.check('password','A password is required').notEmpty();
+		errors = req.validationErrors();
+		if(errors){
+			res.render('index',{errors:errors,message:req.flash('signupMessage')});
+			errors = []; // to clear the errors array
+		}
+		else{
+			passport.authenticate('local-signup',{
+			successRedirect: '/login',
+			failureRedirect: '/',
+			failureFlash: true
+			})(req,res);
+		}
+	});
 
+	app.get('/login',function(req,res){
+		res.render('login',{errors:errors,message:req.flash('loginMessage')});
+	});
 
-app.post('/logout',function(req,res){
-		req.logout();
-		res.redirect('login');
-});
+	app.get('/success',isLoggedIn,function(req,res){
+		res.render('success',{
+			user:req.user
+		});
+	});
 
-function isLoggedIn(req,res,next){
-	if(req.isAuthenticated()){
-		return next();
-	}
-	res.render('login');
-}
+	app.post('/login', function(req,res){
+		req.check('username','Please enter a username').notEmpty();
+		req.check('password','Please enter your password').notEmpty();
+		errors = req.validationErrors();
+		if(errors){
+			res.render('login',{errors:errors,message:req.flash('loginMessage')});
+			errors = []; // to clear the errors array
+		}
+		else{
+			passport.authenticate('local-login',{
+			successRedirect: '/success',
+		    failureRedirect: '/login',
+		    failureFlash: true
+			})(req,res);
+		}
+	});
 
+	app.post('/logout',function(req,res){
+			req.logout(); // this a built in function from passport.js
+			res.redirect('login');
+	});
+
+	function isLoggedIn(req,res,next){
+		if(req.isAuthenticated()){
+			return next();
+		}
+		res.render('login');
+	} // this function keeps anyone from accessing the '/success' page unless they are 
+	// logged in
 // ---------------------------------------------------------------------------
 
 var port = process.env.PORT || 3000;
