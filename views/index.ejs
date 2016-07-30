@@ -2,32 +2,42 @@
 <html>
 <head>
 	<title>Registration</title>
+	<style>
+		.red{
+			color:red;
+		}
+	</style>
 </head>
 <body>
 	<% if(message){ %>
-		<div style='color:red'><%= message %></div>
+		<div class="red"><%= message %></div>
 	<% } %>
-	<% if(errors){ %>
-		<ul>
-			<% for(error in errors){ %>
-			<li style='color:red;list-style-type:none'><%= errors[error].msg %></li>
-			<% } %>
-		</ul>
-	<% }%>
-	
-	
 	<h1>Register here</h1>
 	<form action='/register' method='post'>
 		<div>
 			<label>Username: </label>
 			<input type='text' name='username' placeholder='username'>
+			<%  if(errors){ %>
+				<% for(error in errors){ 
+						if((errors[error].msg) == "A username is required"){ %>
+							<p class="red"><%= errors[error].msg %></p>
+						<% } %>
+					<% } %>
+				<% } %>
 		</div>
 		<div>
 			<label>Password: </label>
 			<input type='password' name='password' placeholder='password'>
+			<%  if(errors){ %>
+				<% for(error in errors){ 
+						if((errors[error].msg) == "A password is required"){ %>
+							<p class="red"><%= errors[error].msg %></p>
+						<% } %>
+					<% } %>
+				<% } %>
 		</div>
 		<input type='submit' value='Register'>
 	</form>
-	<p><a href='/login'>Click here to log in if you have already registerd</a></p>
+	<p><a href='/login'>Click here to log in if you have already registered</a></p>
 </body>
 </html>
