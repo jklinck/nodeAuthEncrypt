@@ -6,6 +6,9 @@
 		.red{
 			color:red;
 		}
+		.inline{
+			display:inline;
+		}
 	</style>
 </head>
 <body>
@@ -20,7 +23,7 @@
 			<%  if(errors){ %>
 				<% for(error in errors){ 
 						if((errors[error].msg) == "A username is required"){ %>
-							<p class="red"><%= errors[error].msg %></p>
+							<p class="red inline"><%= errors[error].msg %></p>
 						<% } %>
 					<% } %>
 				<% } %>
@@ -31,7 +34,7 @@
 			<%  if(errors){ %>
 				<% for(error in errors){ 
 						if((errors[error].msg) == "A password is required"){ %>
-							<p class="red"><%= errors[error].msg %></p>
+							<p class="red inline"><%= errors[error].msg %></p>
 						<% } %>
 					<% } %>
 				<% } %>
